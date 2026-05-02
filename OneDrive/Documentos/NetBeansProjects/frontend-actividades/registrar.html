@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrar actividad · Quehaceres del Hogar</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<a href="#contenido" class="skip-link">Saltar al contenido principal</a>
+
+<header class="cabecera">
+    <div class="cabecera-interior">
+        <a href="index.html" class="marca" aria-label="Inicio · Actividades del Hogar">
+            <span class="logotipo">los <em>quehaceres</em></span>
+            <span class="subtitulo">Taller 4 · Prog. Avanzada</span>
+        </a>
+        <nav class="nav" aria-label="Navegación principal">
+            <a href="index.html">Inicio</a>
+            <a href="registrar.html" class="activo">Registrar</a>
+            <a href="listar.html">Listar</a>
+            <a href="consultar.html">Consultar</a>
+            <a href="modificar.html">Modificar</a>
+            <a href="borrar.html">Borrar</a>
+        </nav>
+    </div>
+</header>
+
+<main id="contenido">
+
+    <h1 class="titulo-pagina">Registrar una <em>actividad</em></h1>
+    <p class="subtitulo-pagina">
+        Completa los datos de la actividad. Los campos marcados con
+        <span style="color:var(--terracota);font-weight:700;">*</span> son
+        obligatorios. La fecha de terminación no puede ser anterior a la de
+        inicio.
+    </p>
+
+    <div id="mensaje-form" class="panel-mensaje" role="alert" aria-live="polite" hidden></div>
+
+    <form id="form-registrar" class="formulario" novalidate>
+
+        <div class="grid-campos">
+
+            <div class="campo col-completo">
+                <label for="titulo">Título<span class="obligatorio">*</span></label>
+                <input type="text" id="titulo" name="titulo" required maxlength="120"
+                       placeholder="Ej. Doblar la ropa limpia">
+                <span class="ayuda">Máximo 120 caracteres.</span>
+            </div>
+
+            <div class="campo col-completo">
+                <label for="descripcion">Descripción<span class="obligatorio">*</span></label>
+                <textarea id="descripcion" name="descripcion" required maxlength="500"
+                          placeholder="Describe en detalle lo que hay que hacer."></textarea>
+                <span class="ayuda">Máximo 500 caracteres.</span>
+            </div>
+
+            <div class="campo">
+                <label for="fechaInicio">Fecha de inicio<span class="obligatorio">*</span></label>
+                <input type="date" id="fechaInicio" name="fechaInicio" required>
+            </div>
+
+            <div class="campo">
+                <label for="fechaTerminacion">Fecha de terminación<span class="obligatorio">*</span></label>
+                <input type="date" id="fechaTerminacion" name="fechaTerminacion" required>
+            </div>
+
+            <div class="campo col-completo">
+                <label for="tipoActividad">Tipo de actividad<span class="obligatorio">*</span></label>
+                <select id="tipoActividad" name="tipoActividad" required>
+                    <option value="" disabled selected>— elige una opción —</option>
+                    <option value="FISICA">Física</option>
+                    <option value="ACOMPANAMIENTO">Acompañamiento</option>
+                    <option value="SUPERVISION">Supervisión</option>
+                    <option value="CREATIVIDAD">Creatividad</option>
+                </select>
+            </div>
+
+            <div class="campo">
+                <label for="idQuehacer">Id del quehacer<span class="obligatorio">*</span></label>
+                <input type="number" id="idQuehacer" name="idQuehacer" required min="1" placeholder="1">
+            </div>
+
+            <div class="campo">
+                <label for="idTutor">Id del tutor<span class="obligatorio">*</span></label>
+                <input type="number" id="idTutor" name="idTutor" required min="1" placeholder="100">
+            </div>
+
+            <div class="campo">
+                <label for="idHijo">Id del hijo<span class="obligatorio">*</span></label>
+                <input type="number" id="idHijo" name="idHijo" required min="1" placeholder="200">
+            </div>
+
+        </div>
+
+        <div class="acciones-formulario">
+            <button type="submit" class="btn btn-terracota">Registrar actividad</button>
+            <button type="reset" class="btn btn-secundario">Limpiar formulario</button>
+            <a href="index.html" class="btn btn-secundario">Cancelar</a>
+        </div>
+
+        <p class="aviso-conexion">
+            <strong>Atención:</strong> el backend Spring Boot debe estar corriendo en
+            <code>http://localhost:8080</code> para que el registro se complete.
+        </p>
+    </form>
+
+</main>
+
+<footer class="pie-pagina">
+    <div class="pie-interior">
+        <span>© 2026 · Programación Avanzada · Universidad Distrital Francisco José de Caldas</span>
+        <span class="firma">Taller No 4 — Microservicios</span>
+    </div>
+</footer>
+
+<script src="js/cliente-api.js"></script>
+</body>
+</html>
