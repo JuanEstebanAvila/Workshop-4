@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listar actividades · Quehaceres del Hogar</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<a href="#contenido" class="skip-link">Saltar al contenido principal</a>
+
+<header class="cabecera">
+    <div class="cabecera-interior">
+        <a href="index.html" class="marca" aria-label="Inicio · Actividades del Hogar">
+            <span class="logotipo">los <em>quehaceres</em></span>
+            <span class="subtitulo">Taller 4 · Prog. Avanzada</span>
+        </a>
+        <nav class="nav" aria-label="Navegación principal">
+            <a href="index.html">Inicio</a>
+            <a href="registrar.html">Registrar</a>
+            <a href="listar.html" class="activo">Listar</a>
+            <a href="consultar.html">Consultar</a>
+            <a href="modificar.html">Modificar</a>
+            <a href="borrar.html">Borrar</a>
+        </nav>
+    </div>
+</header>
+
+<main id="contenido">
+
+    <div class="flex-entre" style="margin-bottom:1rem;">
+        <div>
+            <h1 class="titulo-pagina">Todas las <em>actividades</em></h1>
+            <p class="subtitulo-pagina" style="margin-bottom:0;">
+                Listado completo recuperado del backend mediante
+                <code>GET /api/actividades</code>.
+            </p>
+        </div>
+        <a href="registrar.html" class="btn btn-terracota">+ Nueva actividad</a>
+    </div>
+
+    <div id="mensaje-form" class="panel-mensaje" role="alert" aria-live="polite" hidden></div>
+
+    <div id="cuadricula-actividades" class="cuadricula-actividades">
+        <!-- Las tarjetas se inyectan dinámicamente desde js/cliente-api.js -->
+    </div>
+
+</main>
+
+<footer class="pie-pagina">
+    <div class="pie-interior">
+        <span>© 2026 · Programación Avanzada · Universidad Distrital Francisco José de Caldas</span>
+        <span class="firma">Taller No 4 — Microservicios</span>
+    </div>
+</footer>
+
+<script src="js/cliente-api.js"></script>
+</body>
+</html>
