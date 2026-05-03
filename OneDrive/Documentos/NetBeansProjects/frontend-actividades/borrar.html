@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Borrar actividad · Quehaceres del Hogar</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<a href="#contenido" class="skip-link">Saltar al contenido principal</a>
+
+<header class="cabecera">
+    <div class="cabecera-interior">
+        <a href="index.html" class="marca" aria-label="Inicio · Actividades del Hogar">
+            <span class="logotipo">los <em>quehaceres</em></span>
+            <span class="subtitulo">Taller 4 · Prog. Avanzada</span>
+        </a>
+        <nav class="nav" aria-label="Navegación principal">
+            <a href="index.html">Inicio</a>
+            <a href="registrar.html">Registrar</a>
+            <a href="listar.html">Listar</a>
+            <a href="consultar.html">Consultar</a>
+            <a href="modificar.html">Modificar</a>
+            <a href="borrar.html" class="activo">Borrar</a>
+        </nav>
+    </div>
+</header>
+
+<main id="contenido">
+
+    <h1 class="titulo-pagina">Borrar una <em>actividad</em></h1>
+    <p class="subtitulo-pagina">
+        Localiza la actividad por su id, revisa que sea la correcta y
+        confirma el borrado. La operación dispara
+        <code>DELETE /api/actividades/{id}</code> y es irreversible.
+    </p>
+
+    <div id="mensaje-form" class="panel-mensaje" role="alert" aria-live="polite" hidden></div>
+
+    <!-- Paso 1: buscar -->
+    <form id="form-buscar-borrar" class="formulario" novalidate style="margin-bottom:2rem;">
+        <div class="grid-campos">
+            <div class="campo col-completo">
+                <label for="id">Id de la actividad a borrar<span class="obligatorio">*</span></label>
+                <input type="number" id="id" name="id" required min="1" placeholder="Ej. 3">
+            </div>
+        </div>
+        <div class="acciones-formulario">
+            <button type="submit" class="btn btn-primario">Buscar</button>
+            <a href="listar.html" class="btn btn-secundario">Ver todas</a>
+        </div>
+    </form>
+
+    <!-- Paso 2: confirmación visual (reemplaza confirm() del navegador) -->
+    <section id="confirmacion-borrado" class="formulario" hidden
+             aria-labelledby="titulo-confirmacion"
+             style="border-color:var(--terracota);background:#FFF8F3;">
+
+        <h2 id="titulo-confirmacion" style="color:var(--terracota);">
+            ¿Confirmar el borrado?
+        </h2>
+        <p style="color:var(--tinta-suave);margin-bottom:1.5rem;">
+            Estás a punto de eliminar la siguiente actividad de la base
+            de datos. Esta acción <strong>no se puede deshacer</strong>.
+        </p>
+
+        <div class="detalle" style="background:white;padding:1.5rem;border-radius:var(--r-md);">
+            <span class="etiqueta-tipo" id="borrar-tipo">FISICA</span>
+            <h3 class="titulo-actividad" id="borrar-titulo" style="font-size:1.5rem;">
+                Título de la actividad
+            </h3>
+            <p class="descripcion-actividad" id="borrar-descripcion">
+                Descripción de la actividad.
+            </p>
+            <dl style="grid-template-columns:max-content 1fr;display:grid;gap:0.5rem 2rem;">
+                <dt>Id</dt><dd id="borrar-id">0</dd>
+            </dl>
+        </div>
+
+        <div class="acciones-formulario">
+            <button type="button" id="btn-confirmar-borrar" class="btn btn-peligro">
+                Sí, borrar definitivamente
+            </button>
+            <button type="button" id="btn-cancelar-borrar" class="btn btn-secundario">
+                Cancelar
+            </button>
+        </div>
+    </section>
+
+</main>
+
+<footer class="pie-pagina">
+    <div class="pie-interior">
+        <span>© 2026 · Programación Avanzada · Universidad Distrital Francisco José de Caldas</span>
+        <span class="firma">Taller No 4 — Microservicios</span>
+    </div>
+</footer>
+
+<script src="js/cliente-api.js"></script>
+</body>
+</html>

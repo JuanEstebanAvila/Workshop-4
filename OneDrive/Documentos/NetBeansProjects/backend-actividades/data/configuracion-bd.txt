@@ -1,0 +1,92 @@
+================================================================
+  CONFIGURACIÓN DE LA BASE DE DATOS
+  Taller No 4 - Programación Avanzada
+  Universidad Distrital Francisco José de Caldas
+================================================================
+
+1. MOTOR DE BASE DE DATOS
+   --------------------------------------------------------------
+   Nombre   : H2 Database Engine
+   Modo     : En memoria (in-memory)
+   Versión  : la administrada por spring-boot-starter-data-jpa 3.3.4
+   Razón    : el enunciado del taller exige usar H2 como base
+              de datos en memoria para los microservicios.
+
+
+2. PARÁMETROS DE CONEXIÓN
+   --------------------------------------------------------------
+   JDBC URL    : jdbc:h2:mem:bd_actividades;DB_CLOSE_DELAY=-1;MODE=MySQL
+   Driver      : org.h2.Driver
+   Usuario     : sa
+   Contraseña  : (vacía)
+   Nombre BD   : bd_actividades
+
+   Estos parámetros están centralizados en el archivo
+   src/main/resources/application.properties para mantener la
+   configuración desacoplada del código fuente, tal como exige
+   el aspecto (m) del enunciado.
+
+
+3. CONSOLA WEB DE H2
+   --------------------------------------------------------------
+   Habilitada en   : http://localhost:8080/h2-console
+   JDBC URL aquí   : jdbc:h2:mem:bd_actividades
+   Usuario         : sa
+   Contraseña      : (vacía)
+
+
+4. ESTRATEGIA DE DDL
+   --------------------------------------------------------------
+   spring.jpa.hibernate.ddl-auto = create-drop
+
+   El esquema se regenera al arrancar la aplicación y se elimina
+   al cerrarla. Esta estrategia es apropiada para una BD en
+   memoria de propósito didáctico. Al arrancar, el componente
+   DataInitializer inserta automáticamente varias actividades
+   de ejemplo para poder probar todos los endpoints.
+
+
+5. SCRIPT EQUIVALENTE DE CREACIÓN DE TABLA
+   --------------------------------------------------------------
+   Aunque la tabla la genera Hibernate a partir de la entidad
+   JPA, el SQL equivalente sería:
+
+   CREATE TABLE ACTIVIDAD (
+       ID_ACTIVIDAD       BIGINT       NOT NULL AUTO_INCREMENT,
+       TITULO             VARCHAR(120) NOT NULL,
+       DESCRIPCION        VARCHAR(500) NOT NULL,
+       FECHA_INICIO       DATE         NOT NULL,
+       FECHA_TERMINACION  DATE         NOT NULL,
+       TIPO_ACTIVIDAD     VARCHAR(30)  NOT NULL,
+       ID_QUEHACER        BIGINT       NOT NULL,
+       ID_TUTOR           BIGINT       NOT NULL,
+       ID_HIJO            BIGINT       NOT NULL,
+       PRIMARY KEY (ID_ACTIVIDAD)
+   );
+
+
+6. MECANISMO DE CONEXIÓN
+   --------------------------------------------------------------
+   Toda la conexión se realiza a través de los mecanismos
+   proporcionados por Spring:
+     - DataSource autoconfigurado por Spring Boot a partir de
+       las propiedades spring.datasource.*
+     - EntityManager y transaccionalidad gestionados por Spring
+       Data JPA / Hibernate.
+     - Acceso a datos exclusivamente a través de la interfaz
+       ActividadRepository (extiende JpaRepository).
+
+   En NINGÚN punto del código de aplicación se escriben
+   sentencias SQL ni se abren conexiones JDBC manualmente. Todo
+   el SQL es generado por Hibernate.
+
+
+7. CAMBIO A OTRA BASE DE DATOS
+   --------------------------------------------------------------
+   Para usar otra BD (MySQL, PostgreSQL, etc.) basta con:
+     1) Reemplazar la dependencia h2 del pom.xml por el driver
+        correspondiente.
+     2) Cambiar las propiedades spring.datasource.* en
+        application.properties.
+   No se requieren cambios en el código de la aplicación,
+   gracias a la abstracción de Spring Data JPA.
