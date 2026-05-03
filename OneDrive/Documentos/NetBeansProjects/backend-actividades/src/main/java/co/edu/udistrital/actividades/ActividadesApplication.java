@@ -20,15 +20,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  *       sub-paquetes (model, repository, service, controller, config).</li>
  * </ul>
  *
- * @author Taller 4 - Programación Avanzada
+ * @author Grupo Taller 4 - Programación Avanzada
  * @version 1.0.0
  * @since 2026-05-01
  */
-
-// @SpringBootApplication le dice a Spring que escanee todos los sub-paquetes 
-//(model, repository, service, controller, config)y configure todo automáticamente.
-
-@SpringBootApplication  
+@SpringBootApplication
 public class ActividadesApplication {
 
     /**

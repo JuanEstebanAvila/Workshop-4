@@ -5,9 +5,11 @@
   Proyecto: FrontEnd HTML
 ================================================================
 
-1. Julian David Muñoz Revelo - 20251020042 
-2. Juan Steban Avila Trujillo - 20251020054
-3. Juan sneyder Méndez gil  - 20251020010
+[REEMPLAZAR ANTES DE LA ENTREGA]
+
+1. Nombre completo - Código estudiantil - Correo institucional
+2. Nombre completo - Código estudiantil - Correo institucional
+3. Nombre completo - Código estudiantil - Correo institucional
 
 
 Profesor: Jhon Herrera Cubides

@@ -34,7 +34,17 @@
             font-size: 2rem;
             margin: 1rem 0;
         }
-        p { color: #4B5563; max-width: 40ch; margin-bottom: 2rem; }
+        p { color: #4B5563; max-width: 50ch; margin-bottom: 1rem; }
+        .mensaje-error {
+            background: white;
+            border-left: 4px solid #B8451F;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            color: #92310C;
+            max-width: 50ch;
+            margin: 1rem 0 2rem;
+            font-size: 0.95rem;
+        }
         a {
             color: #1E3A5F;
             font-weight: 600;
@@ -47,7 +57,10 @@
 <body>
 <div class="grande">404</div>
 <h1>Actividad no encontrada</h1>
-<p>No existe ninguna actividad con el id <strong th:text="${idBuscado}">0</strong> en la base de datos.</p>
+<div class="mensaje-error" th:if="${mensajeError}" th:text="${mensajeError}">
+    No existe ninguna actividad con el id 0 en la base de datos.
+</div>
+<p>Verifica que el identificador <strong th:text="${idBuscado}">0</strong> sea correcto.</p>
 <a th:href="@{/vista/actividades}">Volver al listado</a>
 </body>
 </html>

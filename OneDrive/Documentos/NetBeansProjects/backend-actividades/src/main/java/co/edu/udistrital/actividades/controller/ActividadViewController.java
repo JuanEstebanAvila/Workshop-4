@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import co.edu.udistrital.actividades.dto.ActividadResponse;
+import co.edu.udistrital.actividades.exception.ActividadNoEncontradaException;
 import co.edu.udistrital.actividades.service.IActividadService;
 
 /**
@@ -16,12 +18,13 @@ import co.edu.udistrital.actividades.service.IActividadService;
  * <em>"el backend se probará haciendo uso de cada uno de los endpoint,
  * consultados en un navegador"</em>.</p>
  *
- * <p>Las vistas Thymeleaf renderizan páginas HTML en {@code src/main/
- * resources/templates/}. Los datos del modelo se inyectan al contexto y
- * se acceden con la sintaxis {@code th:*} en las plantillas.</p>
+ * <p>Este controlador trabaja con {@link ActividadResponse} para alimentar
+ * las plantillas Thymeleaf, manteniendo coherencia con el formato de
+ * respuesta usado por el API REST (mismo objeto, dos canales de salida:
+ * JSON y HTML).</p>
  *
  * @author Grupo Taller 4 - Programación Avanzada
- * @version 1.0.0
+ * @version 1.1.0
  */
 @Controller
 @RequestMapping("/vista")
@@ -40,7 +43,6 @@ public class ActividadViewController {
 
     /**
      * Renderiza la página de inicio con la lista completa de actividades.
-     *
      * @param model modelo expuesto a la plantilla.
      * @return nombre lógico de la plantilla {@code index.html}.
      */
@@ -52,7 +54,6 @@ public class ActividadViewController {
 
     /**
      * Renderiza la lista completa de actividades.
-     *
      * @param model modelo expuesto a la plantilla.
      * @return nombre lógico de la plantilla {@code lista.html}.
      */
@@ -65,6 +66,10 @@ public class ActividadViewController {
     /**
      * Renderiza el detalle de una actividad concreta.
      *
+     * <p>Si la actividad no existe, captura la excepción y muestra una
+     * plantilla amigable de "no encontrada" en lugar de la página de
+     * error genérica de Spring.</p>
+     *
      * @param id    identificador de la actividad.
      * @param model modelo expuesto a la plantilla.
      * @return nombre lógico de la plantilla {@code detalle.html} si la
@@ -73,14 +78,14 @@ public class ActividadViewController {
      */
     @GetMapping("/actividades/{id}")
     public String verDetalle(@PathVariable final Long id, final Model model) {
-        return actividadService.consultarPorId(id)
-                .map(act -> {
-                    model.addAttribute("actividad", act);
-                    return "detalle";
-                })
-                .orElseGet(() -> {
-                    model.addAttribute("idBuscado", id);
-                    return "no-encontrada";
-                });
+        try {
+            final ActividadResponse actividad = actividadService.consultarPorId(id);
+            model.addAttribute("actividad", actividad);
+            return "detalle";
+        } catch (final ActividadNoEncontradaException ex) {
+            model.addAttribute("idBuscado", id);
+            model.addAttribute("mensajeError", ex.getMessage());
+            return "no-encontrada";
+        }
     }
 }

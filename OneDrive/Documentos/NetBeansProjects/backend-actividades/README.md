@@ -2,11 +2,76 @@
 
 Proyecto Spring Boot que expone los microservicios CRUD sobre la entidad **Actividad** para el Taller No 4 de Programación Avanzada (Universidad Distrital Francisco José de Caldas).
 
+## Arquitectura
+
+El proyecto sigue una arquitectura por capas con separación clara de responsabilidades (SOLID):
+
+```
+co.edu.udistrital.actividades
+├── ActividadesApplication.java          · Punto de entrada de Spring Boot
+├── config/
+│   ├── CorsConfig.java                  · Política CORS expresada
+│   └── DataInitializer.java             · Carga inicial de actividades
+├── model/
+│   ├── Actividad.java                   · Entidad JPA (solo persistencia)
+│   └── TipoActividad.java               · Enum de tipos
+├── dto/
+│   ├── ActividadDTO.java                · Entrada (con anotaciones de validación)
+│   ├── ActividadResponse.java           · Salida al frontend (sin validaciones)
+│   └── ErrorResponse.java               · Estructura de errores devueltos
+├── exception/
+│   ├── ActividadNoEncontradaException.java
+│   ├── DatosInvalidosException.java
+│   └── ManejadorGlobalExcepciones.java  · @RestControllerAdvice global
+├── repository/
+│   └── ActividadRepository.java         · JpaRepository
+├── service/
+│   ├── IActividadService.java           · Contrato (interfaz, DIP)
+│   └── ActividadServiceImpl.java        · Implementación con reglas de negocio
+└── controller/
+    ├── ActividadRestController.java     · API REST (microservicios)
+    └── ActividadViewController.java     · Vistas Thymeleaf
+```
+
+### Patrón DTO + Response
+
+Para evitar exponer la entidad de persistencia al frontend y separar claramente las preocupaciones:
+
+| Tipo | Para qué se usa | Anotaciones que lleva |
+|------|-----------------|------------------------|
+| `Actividad` (entidad) | Persistencia en H2 | Sólo JPA (`@Entity`, `@Column`) |
+| `ActividadDTO` | Recibir peticiones del frontend | Bean Validation (`@NotBlank`, `@NotNull`...) |
+| `ActividadResponse` | Devolver respuestas al frontend | Sólo Jackson (`@JsonFormat`) |
+
+### Manejo de errores
+
+Cuando una operación no termina bien, las clases del backend lanzan **excepciones tipadas** (no devuelven `Optional` vacíos ni booleanos). El componente `@RestControllerAdvice` las captura y las transforma en respuestas JSON estructuradas que el frontend muestra al usuario.
+
+```json
+{
+    "marcaTiempo": "2026-05-02 14:35:12",
+    "codigo":      404,
+    "estado":      "Not Found",
+    "mensaje":     "No existe ninguna actividad con el id 99 en la base de datos.",
+    "ruta":        "/api/actividades/99"
+}
+```
+
+Excepciones manejadas:
+
+| Excepción | Código HTTP | Cuándo se lanza |
+|-----------|-------------|-----------------|
+| `ActividadNoEncontradaException` | 404 | Al consultar/modificar/borrar un id inexistente |
+| `DatosInvalidosException` | 400 | Al violar reglas de negocio (fechas inconsistentes...) |
+| `MethodArgumentNotValidException` | 400 | Al fallar la validación del DTO con `@Valid` |
+| `HttpMessageNotReadableException` | 400 | Al recibir un JSON malformado |
+| `Exception` (cualquier otra) | 500 | Red de seguridad |
+
 ## Requisitos
 
 - JDK 17 o superior
 - Maven 3.8+ (o usar `./mvnw` si se incluye el wrapper)
-- NetBeans 17+ (opcional; el proyecto Maven se importa directamente)
+- NetBeans 17+
 
 ## Cómo ejecutar
 
@@ -14,18 +79,16 @@ Proyecto Spring Boot que expone los microservicios CRUD sobre la entidad **Activ
 mvn spring-boot:run
 ```
 
-La aplicación arranca en `http://localhost:8080`.
-
-Al primer arranque se cargan **7 actividades de ejemplo** en la base de datos H2, para poder probar todos los endpoints.
+La aplicación arranca en `http://localhost:8080`. Al primer arranque se cargan **7 actividades de ejemplo** en la base de datos H2.
 
 ## Endpoints REST
 
 | Método  | URL                          | Acción                        |
 |---------|------------------------------|-------------------------------|
-| POST    | `/api/actividades`           | Insertar actividad            |
+| POST    | `/api/actividades`           | Insertar (recibe `ActividadDTO`) |
 | GET     | `/api/actividades`           | Consultar todas               |
 | GET     | `/api/actividades/{id}`      | Consultar por id              |
-| PUT     | `/api/actividades/{id}`      | Modificar (parcial)           |
+| PUT     | `/api/actividades/{id}`      | Modificar                     |
 | DELETE  | `/api/actividades/{id}`      | Borrar                        |
 
 ### Ejemplo de cuerpo JSON para POST/PUT
@@ -61,27 +124,6 @@ Al primer arranque se cargan **7 actividades de ejemplo** en la base de datos H2
 - Usuario: `sa`
 - Contraseña: *(vacía)*
 
-## Estructura de paquetes (MVC + SOLID)
-
-```
-co.edu.udistrital.actividades
-├── ActividadesApplication.java     · Punto de entrada
-├── config/
-│   ├── CorsConfig.java             · Política CORS expresada
-│   └── DataInitializer.java        · Carga inicial de datos
-├── model/
-│   ├── Actividad.java              · Entidad JPA
-│   └── TipoActividad.java          · Enum de tipos
-├── repository/
-│   └── ActividadRepository.java    · JpaRepository (capa Repositorio)
-├── service/
-│   ├── IActividadService.java      · Contrato (capa Servicio - DIP)
-│   └── ActividadServiceImpl.java   · Implementación
-└── controller/
-    ├── ActividadRestController.java · API REST (capa Controlador)
-    └── ActividadViewController.java · Vistas Thymeleaf
-```
-
 ## Documentación
 
 Todo el código está anotado con JavaDoc. Para generar el sitio HTML:
@@ -91,9 +133,3 @@ mvn javadoc:javadoc
 ```
 
 El resultado queda en `target/site/apidocs/index.html`.
-
-## Notas del taller
-
-- El frontend HTML se construye en un proyecto **separado** (`frontend-actividades/`).
-- Las políticas CORS están declaradas tanto a nivel de configuración global (`CorsConfig`) como a nivel de controlador (`@CrossOrigin`).
-- La capa de servicio depende de una **interfaz** (no de una clase concreta), respetando el principio de Inversión de Dependencias.

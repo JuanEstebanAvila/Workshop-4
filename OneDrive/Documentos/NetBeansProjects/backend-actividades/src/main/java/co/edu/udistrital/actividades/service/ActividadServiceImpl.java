@@ -1,11 +1,15 @@
 package co.edu.udistrital.actividades.service;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import co.edu.udistrital.actividades.dto.ActividadDTO;
+import co.edu.udistrital.actividades.dto.ActividadResponse;
+import co.edu.udistrital.actividades.exception.ActividadNoEncontradaException;
+import co.edu.udistrital.actividades.exception.DatosInvalidosException;
 import co.edu.udistrital.actividades.model.Actividad;
 import co.edu.udistrital.actividades.repository.ActividadRepository;
 
@@ -13,28 +17,33 @@ import co.edu.udistrital.actividades.repository.ActividadRepository;
  * Implementación por defecto de {@link IActividadService}.
  *
  * <p>Esta clase concentra toda la lógica de negocio relacionada con la
- * entidad {@link Actividad}. Es el <em>único</em> componente del sistema
- * que la conoce; tanto controladores como repositorios desconocen las
- * reglas que aquí se aplican.</p>
+ * entidad Actividad. Es el <em>único</em> componente del sistema que
+ * conoce las reglas; tanto controladores como repositorios desconocen
+ * lo que aquí se aplica.</p>
  *
- * <p>Se inyecta el {@link ActividadRepository} a través del constructor
- * (inyección por constructor, recomendada por Spring), lo que facilita
- * las pruebas unitarias y respeta el principio de Inversión de
- * Dependencias.</p>
+ * <p>Responsabilidades:</p>
+ * <ol>
+ *   <li>Convertir el DTO de entrada en entidad para la persistencia.</li>
+ *   <li>Aplicar las reglas de negocio (validación de fechas, búsqueda,
+ *       etc.).</li>
+ *   <li>Convertir las entidades persistidas en Response para devolver
+ *       al controlador.</li>
+ *   <li>Lanzar excepciones tipadas cuando una operación no termina
+ *       satisfactoriamente.</li>
+ * </ol>
  *
- * @author  Taller 4 - Programación Avanzada
- * @version 1.0.1
+ * @author Grupo Taller 4 - Programación Avanzada
+ * @version 1.1.0
  */
 @Service
 @Transactional
 public class ActividadServiceImpl implements IActividadService {
 
-    /** Repositorio para acceder a la persistencia de actividades. */
+    /** Repositorio para acceder a la persistencia. */
     private final ActividadRepository actividadRepository;
 
     /**
      * Constructor con inyección de dependencias.
-     *
      * @param actividadRepository repositorio JPA inyectado por Spring.
      */
     public ActividadServiceImpl(final ActividadRepository actividadRepository) {
@@ -43,16 +52,17 @@ public class ActividadServiceImpl implements IActividadService {
 
     /**
      * {@inheritDoc}
-     *
-     * <p>Implementación: valida que la actividad no sea nula y que las
-     * fechas sean coherentes; el id se fuerza a {@code null} para que la
-     * base de datos genere uno nuevo.</p>
      */
     @Override
-    public Actividad insertar(final Actividad actividad) {
-        validarActividad(actividad);
-        actividad.setId(null); // Se asegura inserción, no actualización.
-        return actividadRepository.save(actividad);
+    public ActividadResponse insertar(final ActividadDTO dto) {
+        if (dto == null) {
+            throw new DatosInvalidosException("La actividad recibida está vacía.");
+        }
+        validarFechas(dto.getFechaInicio(), dto.getFechaTerminacion());
+
+        final Actividad entidad = construirEntidadDesdeDTO(dto);
+        final Actividad persistida = actividadRepository.save(entidad);
+        return ActividadResponse.desdeEntidad(persistida);
     }
 
     /**
@@ -60,8 +70,10 @@ public class ActividadServiceImpl implements IActividadService {
      */
     @Override
     @Transactional(readOnly = true)
-    public List<Actividad> consultarTodas() {
-        return actividadRepository.findAll();
+    public List<ActividadResponse> consultarTodas() {
+        return actividadRepository.findAll().stream()
+                .map(ActividadResponse::desdeEntidad)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -69,99 +81,94 @@ public class ActividadServiceImpl implements IActividadService {
      */
     @Override
     @Transactional(readOnly = true)
-    public Optional<Actividad> consultarPorId(final Long id) {
+    public ActividadResponse consultarPorId(final Long id) {
         if (id == null) {
-            return Optional.empty();
+            throw new DatosInvalidosException("El identificador no puede ser nulo.");
         }
-        return actividadRepository.findById(id);
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * <p>Implementación: realiza una actualización parcial sólo sobre los
-     * campos no nulos del objeto {@code datosNuevos}. De esa manera, el
-     * cliente puede enviar únicamente los atributos que desea cambiar.</p>
-     */
-    @Override
-    public Optional<Actividad> modificar(final Long id, final Actividad datosNuevos) {
-        if (id == null || datosNuevos == null) {
-            return Optional.empty();
-        }
-        return actividadRepository.findById(id).map(existente -> {
-            if (datosNuevos.getTitulo() != null) {
-                existente.setTitulo(datosNuevos.getTitulo());
-            }
-            if (datosNuevos.getDescripcion() != null) {
-                existente.setDescripcion(datosNuevos.getDescripcion());
-            }
-            if (datosNuevos.getFechaInicio() != null) {
-                existente.setFechaInicio(datosNuevos.getFechaInicio());
-            }
-            if (datosNuevos.getFechaTerminacion() != null) {
-                existente.setFechaTerminacion(datosNuevos.getFechaTerminacion());
-            }
-            if (datosNuevos.getTipoActividad() != null) {
-                existente.setTipoActividad(datosNuevos.getTipoActividad());
-            }
-            if (datosNuevos.getIdQuehacer() != null) {
-                existente.setIdQuehacer(datosNuevos.getIdQuehacer());
-            }
-            if (datosNuevos.getIdTutor() != null) {
-                existente.setIdTutor(datosNuevos.getIdTutor());
-            }
-            if (datosNuevos.getIdHijo() != null) {
-                existente.setIdHijo(datosNuevos.getIdHijo());
-            }
-            // Tras los cambios, validamos que las fechas sigan siendo coherentes.
-            validarFechas(existente);
-            return actividadRepository.save(existente);
-        });
+        final Actividad entidad = actividadRepository.findById(id)
+                .orElseThrow(() -> new ActividadNoEncontradaException(id));
+        return ActividadResponse.desdeEntidad(entidad);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public boolean borrar(final Long id) {
-        if (id == null || !actividadRepository.existsById(id)) {
-            return false;
+    public ActividadResponse modificar(final Long id, final ActividadDTO dto) {
+        if (id == null) {
+            throw new DatosInvalidosException("El identificador no puede ser nulo.");
+        }
+        if (dto == null) {
+            throw new DatosInvalidosException("Los datos a modificar no pueden estar vacíos.");
+        }
+
+        final Actividad existente = actividadRepository.findById(id)
+                .orElseThrow(() -> new ActividadNoEncontradaException(id));
+
+        // Aplicar cambios sólo en campos no nulos del DTO (modificación parcial).
+        if (dto.getTitulo() != null)           { existente.setTitulo(dto.getTitulo()); }
+        if (dto.getDescripcion() != null)      { existente.setDescripcion(dto.getDescripcion()); }
+        if (dto.getFechaInicio() != null)      { existente.setFechaInicio(dto.getFechaInicio()); }
+        if (dto.getFechaTerminacion() != null) { existente.setFechaTerminacion(dto.getFechaTerminacion()); }
+        if (dto.getTipoActividad() != null)    { existente.setTipoActividad(dto.getTipoActividad()); }
+        if (dto.getIdQuehacer() != null)       { existente.setIdQuehacer(dto.getIdQuehacer()); }
+        if (dto.getIdTutor() != null)          { existente.setIdTutor(dto.getIdTutor()); }
+        if (dto.getIdHijo() != null)           { existente.setIdHijo(dto.getIdHijo()); }
+
+        validarFechas(existente.getFechaInicio(), existente.getFechaTerminacion());
+
+        final Actividad guardada = actividadRepository.save(existente);
+        return ActividadResponse.desdeEntidad(guardada);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void borrar(final Long id) {
+        if (id == null) {
+            throw new DatosInvalidosException("El identificador no puede ser nulo.");
+        }
+        if (!actividadRepository.existsById(id)) {
+            throw new ActividadNoEncontradaException(id);
         }
         actividadRepository.deleteById(id);
-        return true;
     }
 
     // ---------------------------------------------------------------------
-    // Métodos privados de validación
+    // Métodos privados
     // ---------------------------------------------------------------------
 
     /**
-     * Verifica las invariantes mínimas de una actividad antes de
-     * persistirla.
-     *
-     * @param actividad la actividad a validar.
-     * @throws IllegalArgumentException si la actividad es {@code null} o
-     *                                  las fechas son inconsistentes.
+     * Construye una entidad nueva a partir de los datos del DTO.
+     * @param dto datos de entrada.
+     * @return entidad lista para persistir.
      */
-    private void validarActividad(final Actividad actividad) {
-        if (actividad == null) {
-            throw new IllegalArgumentException("La actividad no puede ser nula");
-        }
-        validarFechas(actividad);
+    private Actividad construirEntidadDesdeDTO(final ActividadDTO dto) {
+        return new Actividad(
+                dto.getTitulo(),
+                dto.getDescripcion(),
+                dto.getFechaInicio(),
+                dto.getFechaTerminacion(),
+                dto.getTipoActividad(),
+                dto.getIdQuehacer(),
+                dto.getIdTutor(),
+                dto.getIdHijo());
     }
 
     /**
-     * Valida que la fecha de terminación no sea anterior a la de inicio.
+     * Verifica que la fecha de terminación no sea anterior a la de inicio.
      *
-     * @param actividad actividad cuyas fechas se validan.
-     * @throws IllegalArgumentException si las fechas son inconsistentes.
+     * @param inicio fecha de inicio.
+     * @param fin    fecha de terminación.
+     * @throws DatosInvalidosException si las fechas son inconsistentes.
      */
-    private void validarFechas(final Actividad actividad) {
-        if (actividad.getFechaInicio() != null
-                && actividad.getFechaTerminacion() != null
-                && actividad.getFechaTerminacion().isBefore(actividad.getFechaInicio())) {
-            throw new IllegalArgumentException(
-                    "La fecha de terminación no puede ser anterior a la de inicio");
+    private void validarFechas(final java.time.LocalDate inicio,
+                               final java.time.LocalDate fin) {
+        if (inicio != null && fin != null && fin.isBefore(inicio)) {
+            throw new DatosInvalidosException(
+                    "La fecha de terminación (" + fin + ") no puede ser anterior "
+                  + "a la de inicio (" + inicio + ").");
         }
     }
 }

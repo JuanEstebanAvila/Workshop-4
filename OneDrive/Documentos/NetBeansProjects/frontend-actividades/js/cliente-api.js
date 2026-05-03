@@ -6,15 +6,24 @@
      - PROHIBIDO usar alert(), confirm(), prompt() o ventanas emergentes.
      - PROHIBIDO usar console.log para mensajes destinados al usuario.
      - TODO el feedback debe renderizarse en elementos HTML de la página.
+
+   Manejo de errores:
+     El backend devuelve los errores como JSON estructurado con la forma:
+       {
+         "marcaTiempo": "2026-05-02 14:35:12",
+         "codigo":      404,
+         "estado":      "Not Found",
+         "mensaje":     "No existe la actividad con id 99...",
+         "ruta":        "/api/actividades/99",
+         "errores":     ["..."]
+       }
+     Este cliente parsea esa respuesta y la muestra en los paneles HTML.
    ========================================================================= */
 
 (function () {
     'use strict';
 
-    /**
-     * URL base del backend Spring Boot. Si arrancas el backend en otro
-     * puerto, modifica esta constante.
-     */
+    /** URL base del backend Spring Boot. */
     var URL_API = 'http://localhost:8080/api/actividades';
 
     // ---------------------------------------------------------------------
@@ -27,17 +36,36 @@
      * @param {string} tipo - 'exito' | 'error' | 'info'
      * @param {string} titulo - encabezado breve.
      * @param {string} cuerpo - texto explicativo.
+     * @param {Array<string>} [detalles] - lista opcional de errores
+     *                                     adicionales a mostrar.
      */
-    function mostrarPanel(idContenedor, tipo, titulo, cuerpo) {
+    function mostrarPanel(idContenedor, tipo, titulo, cuerpo, detalles) {
         var contenedor = document.getElementById(idContenedor);
         if (!contenedor) { return; }
         var iconos = { exito: '✓', error: '!', info: 'i' };
         contenedor.className = 'panel-mensaje ' + tipo;
         contenedor.hidden = false;
-        contenedor.innerHTML =
-            '<span class="icono">' + iconos[tipo] + '</span>' +
-            '<div class="texto"><strong>' + escapar(titulo) + '</strong>' +
-            escapar(cuerpo) + '</div>';
+
+        var html = '<span class="icono">' + iconos[tipo] + '</span>' +
+                   '<div class="texto">' +
+                       '<strong>' + escapar(titulo) + '</strong>' +
+                       escapar(cuerpo);
+
+        // Si el backend devolvió errores adicionales (validación de varios
+        // campos), los agregamos como una lista.
+        if (detalles && detalles.length > 0) {
+            html += '<ul style="margin-top:0.5rem;padding-left:1.2rem;">';
+            for (var i = 0; i < detalles.length; i++) {
+                html += '<li>' + escapar(detalles[i]) + '</li>';
+            }
+            html += '</ul>';
+        }
+
+        html += '</div>';
+        contenedor.innerHTML = html;
+
+        // Llevar el foco al panel para que los lectores de pantalla lo lean.
+        contenedor.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
 
     /**
@@ -69,12 +97,39 @@
      * @param {Error} error error capturado.
      * @returns {string} mensaje a mostrar al usuario.
      */
-    function mensajeError(error) {
+    function mensajeErrorConexion(error) {
         if (error && error.message && error.message.indexOf('Failed to fetch') !== -1) {
             return 'No se pudo contactar el backend. Verifica que esté ' +
                    'corriendo en ' + URL_API + '.';
         }
         return error.message || 'Ha ocurrido un error inesperado.';
+    }
+
+    /**
+     * Procesa una respuesta HTTP errónea y muestra el panel adecuado en
+     * la página, parseando el JSON estructurado que envía el backend.
+     *
+     * @param {Response} respuesta respuesta fetch con código de error.
+     * @param {string} idPanel id del panel donde mostrar el mensaje.
+     */
+    function procesarErrorBackend(respuesta, idPanel) {
+        return respuesta.json()
+            .then(function (errorJson) {
+                // El backend envía la estructura ErrorResponse.
+                var titulo = 'Error ' + (errorJson.codigo || respuesta.status) +
+                             ' — ' + (errorJson.estado || respuesta.statusText);
+                var tipo = (respuesta.status === 404) ? 'info' : 'error';
+                mostrarPanel(idPanel, tipo, titulo,
+                             errorJson.mensaje || 'Sin detalles disponibles.',
+                             errorJson.errores);
+            })
+            .catch(function () {
+                // Si el cuerpo no es JSON válido (caso raro), mostrar
+                // un mensaje genérico con el código HTTP.
+                mostrarPanel(idPanel, 'error',
+                    'Error ' + respuesta.status,
+                    'El backend devolvió un error inesperado.');
+            });
     }
 
     // ---------------------------------------------------------------------
@@ -126,15 +181,11 @@
                         formulario.fechaTerminacion.value = manana;
                     });
                 }
-                return respuesta.text().then(function (texto) {
-                    mostrarPanel('mensaje-form', 'error',
-                        'No se pudo registrar la actividad',
-                        texto || ('Código de error HTTP ' + respuesta.status));
-                });
+                return procesarErrorBackend(respuesta, 'mensaje-form');
             })
             .catch(function (error) {
                 mostrarPanel('mensaje-form', 'error',
-                    'Error de conexión', mensajeError(error));
+                    'Error de conexión', mensajeErrorConexion(error));
             });
         });
     }
@@ -155,23 +206,23 @@
 
         fetch(URL_API)
             .then(function (respuesta) {
-                if (!respuesta.ok) {
-                    throw new Error('HTTP ' + respuesta.status);
+                if (respuesta.ok) {
+                    return respuesta.json().then(function (lista) {
+                        renderizarTarjetas(cuadricula, lista);
+                    });
                 }
-                return respuesta.json();
-            })
-            .then(function (lista) {
-                renderizarTarjetas(cuadricula, lista);
+                cuadricula.innerHTML = '';
+                return procesarErrorBackend(respuesta, 'mensaje-form');
             })
             .catch(function (error) {
                 cuadricula.innerHTML = '';
                 mostrarPanel('mensaje-form', 'error',
-                    'No se pudo cargar el listado', mensajeError(error));
+                    'No se pudo cargar el listado', mensajeErrorConexion(error));
             });
     }
 
     /**
-     * Renderiza una lista de actividades como tarjetas en el contenedor dado.
+     * Renderiza una lista de actividades como tarjetas en el contenedor.
      * @param {HTMLElement} contenedor donde inyectar las tarjetas.
      * @param {Array} lista arreglo de actividades.
      */
@@ -233,29 +284,22 @@
 
             fetch(URL_API + '/' + encodeURIComponent(id))
                 .then(function (respuesta) {
-                    if (respuesta.status === 404) {
-                        mostrarPanel('mensaje-form', 'info',
-                            'Actividad no encontrada',
-                            'No existe ninguna actividad con id ' + id + '.');
-                        return null;
+                    if (respuesta.ok) {
+                        return respuesta.json().then(function (actividad) {
+                            renderizarDetalle(actividad);
+                        });
                     }
-                    if (!respuesta.ok) {
-                        throw new Error('HTTP ' + respuesta.status);
-                    }
-                    return respuesta.json();
-                })
-                .then(function (actividad) {
-                    if (actividad) { renderizarDetalle(actividad); }
+                    return procesarErrorBackend(respuesta, 'mensaje-form');
                 })
                 .catch(function (error) {
                     mostrarPanel('mensaje-form', 'error',
-                        'Error de conexión', mensajeError(error));
+                        'Error de conexión', mensajeErrorConexion(error));
                 });
         });
     }
 
     /**
-     * Renderiza el detalle de una actividad en el contenedor correspondiente.
+     * Renderiza el detalle de una actividad.
      * @param {Object} a actividad con todos los campos.
      */
     function renderizarDetalle(a) {
@@ -297,37 +341,30 @@
 
             fetch(URL_API + '/' + encodeURIComponent(id))
                 .then(function (respuesta) {
-                    if (respuesta.status === 404) {
-                        formularioEdicion.hidden = true;
-                        mostrarPanel('mensaje-form', 'info',
-                            'Actividad no encontrada',
-                            'No existe ninguna actividad con id ' + id + '.');
-                        return null;
+                    if (respuesta.ok) {
+                        return respuesta.json().then(function (actividad) {
+                            formularioEdicion.hidden = false;
+                            formularioEdicion.id_oculto.value      = actividad.id;
+                            formularioEdicion.titulo.value           = actividad.titulo;
+                            formularioEdicion.descripcion.value      = actividad.descripcion;
+                            formularioEdicion.fechaInicio.value      = actividad.fechaInicio;
+                            formularioEdicion.fechaTerminacion.value = actividad.fechaTerminacion;
+                            formularioEdicion.tipoActividad.value    = actividad.tipoActividad;
+                            formularioEdicion.idQuehacer.value       = actividad.idQuehacer;
+                            formularioEdicion.idTutor.value          = actividad.idTutor;
+                            formularioEdicion.idHijo.value           = actividad.idHijo;
+                            mostrarPanel('mensaje-form', 'info',
+                                'Actividad cargada',
+                                'Modifica los campos que necesites y pulsa "Guardar cambios".');
+                        });
                     }
-                    if (!respuesta.ok) {
-                        throw new Error('HTTP ' + respuesta.status);
-                    }
-                    return respuesta.json();
-                })
-                .then(function (actividad) {
-                    if (!actividad) { return; }
-                    formularioEdicion.hidden = false;
-                    formularioEdicion.id_oculto.value      = actividad.id;
-                    formularioEdicion.titulo.value           = actividad.titulo;
-                    formularioEdicion.descripcion.value      = actividad.descripcion;
-                    formularioEdicion.fechaInicio.value      = actividad.fechaInicio;
-                    formularioEdicion.fechaTerminacion.value = actividad.fechaTerminacion;
-                    formularioEdicion.tipoActividad.value    = actividad.tipoActividad;
-                    formularioEdicion.idQuehacer.value       = actividad.idQuehacer;
-                    formularioEdicion.idTutor.value          = actividad.idTutor;
-                    formularioEdicion.idHijo.value           = actividad.idHijo;
-                    mostrarPanel('mensaje-form', 'info',
-                        'Actividad cargada',
-                        'Modifica los campos que necesites y pulsa "Guardar cambios".');
+                    formularioEdicion.hidden = true;
+                    return procesarErrorBackend(respuesta, 'mensaje-form');
                 })
                 .catch(function (error) {
+                    formularioEdicion.hidden = true;
                     mostrarPanel('mensaje-form', 'error',
-                        'Error de conexión', mensajeError(error));
+                        'Error de conexión', mensajeErrorConexion(error));
                 });
         });
 
@@ -358,14 +395,11 @@
                         'Los cambios fueron guardados correctamente.');
                     return;
                 }
-                return respuesta.text().then(function (texto) {
-                    mostrarPanel('mensaje-form', 'error',
-                        'No se pudo modificar', texto || ('HTTP ' + respuesta.status));
-                });
+                return procesarErrorBackend(respuesta, 'mensaje-form');
             })
             .catch(function (error) {
                 mostrarPanel('mensaje-form', 'error',
-                    'Error de conexión', mensajeError(error));
+                    'Error de conexión', mensajeErrorConexion(error));
             });
         });
     }
@@ -395,29 +429,23 @@
 
             fetch(URL_API + '/' + encodeURIComponent(id))
                 .then(function (respuesta) {
-                    if (respuesta.status === 404) {
-                        mostrarPanel('mensaje-form', 'info',
-                            'Actividad no encontrada',
-                            'No existe ninguna actividad con id ' + id + '.');
-                        return null;
+                    if (respuesta.ok) {
+                        return respuesta.json().then(function (actividad) {
+                            idActual = actividad.id;
+                            document.getElementById('borrar-titulo').textContent = actividad.titulo;
+                            document.getElementById('borrar-descripcion').textContent = actividad.descripcion;
+                            document.getElementById('borrar-id').textContent = actividad.id;
+                            var spanTipo = document.getElementById('borrar-tipo');
+                            spanTipo.textContent = actividad.tipoActividad;
+                            spanTipo.className = 'etiqueta-tipo ' + actividad.tipoActividad;
+                            seccionConfirmacion.hidden = false;
+                        });
                     }
-                    if (!respuesta.ok) {
-                        throw new Error('HTTP ' + respuesta.status);
-                    }
-                    return respuesta.json();
-                })
-                .then(function (actividad) {
-                    if (!actividad) { return; }
-                    idActual = actividad.id;
-                    document.getElementById('borrar-titulo').textContent = actividad.titulo;
-                    document.getElementById('borrar-descripcion').textContent = actividad.descripcion;
-                    document.getElementById('borrar-id').textContent = actividad.id;
-                    document.getElementById('borrar-tipo').textContent = actividad.tipoActividad;
-                    seccionConfirmacion.hidden = false;
+                    return procesarErrorBackend(respuesta, 'mensaje-form');
                 })
                 .catch(function (error) {
                     mostrarPanel('mensaje-form', 'error',
-                        'Error de conexión', mensajeError(error));
+                        'Error de conexión', mensajeErrorConexion(error));
                 });
         });
 
@@ -442,18 +470,11 @@
                         idActual = null;
                         return;
                     }
-                    if (respuesta.status === 404) {
-                        mostrarPanel('mensaje-form', 'info',
-                            'Actividad no encontrada',
-                            'La actividad ya no existe en la base de datos.');
-                        seccionConfirmacion.hidden = true;
-                        return;
-                    }
-                    throw new Error('HTTP ' + respuesta.status);
+                    return procesarErrorBackend(respuesta, 'mensaje-form');
                 })
                 .catch(function (error) {
                     mostrarPanel('mensaje-form', 'error',
-                        'Error de conexión', mensajeError(error));
+                        'Error de conexión', mensajeErrorConexion(error));
                 });
         });
     }

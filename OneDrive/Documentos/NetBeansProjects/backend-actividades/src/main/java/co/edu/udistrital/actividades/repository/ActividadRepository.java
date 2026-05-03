@@ -30,12 +30,9 @@ import co.edu.udistrital.actividades.model.TipoActividad;
  * <p>Adicionalmente se declaran consultas derivadas por nombre de método
  * (Spring Data JPA construye el SQL automáticamente). Estas consultas son
  * útiles para futuras funcionalidades de filtrado.</p>
- * 
- * Spring genera el SQL automáticamente solo con el nombre del método. 
- * Esta capa no contiene lógica de negocio.
  *
- * @author Taller 4 - Programación Avanzada
- * @version 1.0.1
+ * @author Grupo Taller 4 - Programación Avanzada
+ * @version 1.0.0
  */
 @Repository
 public interface ActividadRepository extends JpaRepository<Actividad, Long> {

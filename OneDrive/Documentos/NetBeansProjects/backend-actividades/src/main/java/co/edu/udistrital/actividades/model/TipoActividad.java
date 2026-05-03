@@ -5,7 +5,7 @@ package co.edu.udistrital.actividades.model;
  * problema de los quehaceres del hogar.
  *
  * <p>Según el enunciado del Taller No 4, las actividades pueden clasificarse
- * en minimo cuatro categorías principales:</p>
+ * en cuatro categorías principales:</p>
  * <ul>
  *   <li>{@link #FISICA} — Actividades que requieren esfuerzo físico
  *       (barrer, aspirar, lavar el auto).</li>
@@ -20,11 +20,9 @@ package co.edu.udistrital.actividades.model;
  * <p>Mantener este conjunto cerrado como enumeración garantiza la
  * consistencia de los datos almacenados y evita valores inválidos en la
  * base de datos.</p>
- * 
- * En el JSON siempre se escribe en mayúsculas exactamente como aparece aquí.
  *
- * @author Taller 4 - Programación Avanzada
- * @version 1.0.1
+ * @author Grupo Taller 4 - Programación Avanzada
+ * @version 1.0.0
  */
 public enum TipoActividad {
 

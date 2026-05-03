@@ -1,79 +1,83 @@
 package co.edu.udistrital.actividades.service;
 
 import java.util.List;
-import java.util.Optional;
 
-import co.edu.udistrital.actividades.model.Actividad;
+import co.edu.udistrital.actividades.dto.ActividadDTO;
+import co.edu.udistrital.actividades.dto.ActividadResponse;
+import co.edu.udistrital.actividades.exception.ActividadNoEncontradaException;
+import co.edu.udistrital.actividades.exception.DatosInvalidosException;
 
 /**
- * Contrato de la capa de Servicio para la entidad {@link Actividad}.
+ * Contrato de la capa de Servicio para la entidad Actividad.
  *
- * <p>Esta interfaz define <em>qué</em> operaciones de negocio se ofrecen,
- * sin atarse a <em>cómo</em> se implementan. La separación contrato/
- * implementación es la materialización del principio SOLID de
- * <strong>Inversión de Dependencias</strong> (DIP) y permite a los
- * controladores depender de la abstracción y no de una clase concreta.</p>
+ * <p>Define <em>qué</em> operaciones de negocio se ofrecen, sin atarse a
+ * <em>cómo</em> se implementan. La separación contrato/implementación
+ * materializa el principio SOLID de <strong>Inversión de Dependencias</strong>
+ * y permite a los controladores depender de la abstracción y no de una
+ * clase concreta.</p>
  *
- * <p>La capa de Servicio orquesta las operaciones necesarias para cumplir
- * cada funcionalidad y es la única que debe contener lógica de negocio.
- * Se comunica con la capa de Repositorio para persistir o recuperar datos
- * y, en el futuro, podría comunicarse con otros microservicios.</p>
+ * <p><strong>Política de errores:</strong> esta interfaz utiliza
+ * excepciones personalizadas para informar de operaciones que no
+ * terminaron bien:</p>
+ * <ul>
+ *   <li>{@link ActividadNoEncontradaException} cuando se busca o
+ *       modifica/borra una actividad inexistente.</li>
+ *   <li>{@link DatosInvalidosException} cuando los datos suministrados
+ *       infringen reglas de negocio (por ejemplo, fechas inconsistentes).</li>
+ * </ul>
  *
- * @author Taller 4 - Programación Avanzada
- * @version 1.0.1
+ * <p>El manejador global de excepciones del backend
+ * ({@code ManejadorGlobalExcepciones}) intercepta estas excepciones y
+ * las convierte en respuestas HTTP estructuradas que llegan al frontend.</p>
+ *
+ * @author Grupo Taller 4 - Programación Avanzada
+ * @version 1.1.0
  */
 public interface IActividadService {
 
     /**
      * Persiste una nueva actividad en la base de datos.
      *
-     * <p>Reglas de negocio aplicadas:</p>
-     * <ul>
-     *   <li>La fecha de terminación NO puede ser anterior a la de inicio.</li>
-     *   <li>Si el {@code id} viene asignado, se ignora (lo asigna la BD).</li>
-     * </ul>
-     *
-     * @param actividad la actividad a guardar (sin id).
-     * @return la actividad persistida con su {@code id} generado.
-     * @throws IllegalArgumentException si la actividad es {@code null} o
-     *                                  las fechas son inconsistentes.
+     * @param dto datos validados de la actividad a crear.
+     * @return el {@link ActividadResponse} con la actividad persistida y
+     *         su id asignado.
+     * @throws DatosInvalidosException si las reglas de negocio no se
+     *                                 cumplen (por ejemplo, fechas
+     *                                 inconsistentes).
      */
-    Actividad insertar(Actividad actividad);
+    ActividadResponse insertar(ActividadDTO dto);
 
     /**
      * Recupera todas las actividades almacenadas.
-     * @return lista (posiblemente vacía) con todas las actividades.
+     * @return lista de respuestas (puede estar vacía).
      */
-    List<Actividad> consultarTodas();
+    List<ActividadResponse> consultarTodas();
 
     /**
      * Busca una actividad por su identificador único.
      * @param id identificador de la actividad.
-     * @return {@link Optional} que contiene la actividad si existe;
-     *         vacío en caso contrario.
+     * @return el {@link ActividadResponse} correspondiente.
+     * @throws ActividadNoEncontradaException si no existe ninguna
+     *                                        actividad con ese id.
      */
-    Optional<Actividad> consultarPorId(Long id);
+    ActividadResponse consultarPorId(Long id);
 
     /**
      * Modifica una actividad existente con los datos suministrados.
      *
-     * <p>Sólo se actualizan los campos no nulos de {@code datosNuevos},
-     * permitiendo modificaciones parciales sin sobrescribir información.</p>
-     *
-     * @param id           identificador de la actividad a modificar.
-     * @param datosNuevos  objeto con los campos a actualizar.
-     * @return {@link Optional} con la actividad ya modificada, o vacío
-     *         si no se encontró ninguna actividad con ese id.
-     * @throws IllegalArgumentException si las fechas resultantes son
-     *                                  inconsistentes.
+     * @param id  identificador de la actividad a modificar.
+     * @param dto nuevos datos validados.
+     * @return el {@link ActividadResponse} con la actividad ya modificada.
+     * @throws ActividadNoEncontradaException si no existe la actividad.
+     * @throws DatosInvalidosException        si las reglas de negocio
+     *                                        fallan.
      */
-    Optional<Actividad> modificar(Long id, Actividad datosNuevos);
+    ActividadResponse modificar(Long id, ActividadDTO dto);
 
     /**
      * Elimina una actividad por su identificador.
      * @param id identificador de la actividad a eliminar.
-     * @return {@code true} si la actividad existía y fue eliminada;
-     *         {@code false} si no se encontró.
+     * @throws ActividadNoEncontradaException si no existe la actividad.
      */
-    boolean borrar(Long id);
+    void borrar(Long id);
 }

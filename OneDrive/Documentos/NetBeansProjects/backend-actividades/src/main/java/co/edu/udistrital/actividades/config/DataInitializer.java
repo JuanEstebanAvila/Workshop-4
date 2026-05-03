@@ -24,8 +24,8 @@ import co.edu.udistrital.actividades.repository.ActividadRepository;
  * sugerencias por edad descritas en el documento del taller (guardar
  * juguetes, hacer la cama, doblar ropa, lavar el auto, etc.).</p>
  *
- * @author  Taller 4 - Programación Avanzada
- * @version 1.0.1
+ * @author Grupo Taller 4 - Programación Avanzada
+ * @version 1.0.0
  */
 @Configuration
 public class DataInitializer {
@@ -63,7 +63,7 @@ public class DataInitializer {
                     LocalDate.now(),
                     LocalDate.now().plusDays(1),
                     TipoActividad.FISICA,
-                    1L, 100L, 200L));       //actividad, tutor, hijo
+                    1L, 100L, 200L));
 
             repositorio.save(new Actividad(
                     "Hacer la cama",
