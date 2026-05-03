@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consultar actividad · Quehaceres del Hogar</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<a href="#contenido" class="skip-link">Saltar al contenido principal</a>
+<header class="cabecera">
+    <div class="cabecera-interior">
+        <a href="index.html" class="marca"><span class="logotipo">los <em>quehaceres</em></span><span class="subtitulo">Taller 4 · Prog. Avanzada</span></a>
+        <nav class="nav" aria-label="Navegación principal">
+            <a href="index.html">Inicio</a><a href="registrar.html">Registrar</a><a href="listar.html">Listar</a><a href="consultar.html" class="activo">Consultar</a><a href="modificar.html">Modificar</a><a href="borrar.html">Borrar</a>
+        </nav>
+    </div>
+</header>
+<main id="contenido">
+    <h1 class="titulo-pagina">Consultar una <em>actividad</em></h1>
+    <p class="subtitulo-pagina">Endpoint <code class="chip chip-get">GET /api/actividades/{id}</code> — El formulario recoge el parámetro de ruta <code>id</code>. La tabla muestra el <strong>ActividadResponse</strong> retornado.</p>
+
+    <!-- SECCIÓN ENTRADA -->
+    <section class="seccion-endpoint" aria-labelledby="lbl-entrada-cons">
+        <div class="seccion-cabecera">
+            <span class="chip chip-get">GET</span>
+            <h2 id="lbl-entrada-cons">Entrada — Path variable: <code>{id}</code></h2>
+        </div>
+        <p class="seccion-desc">El único parámetro es el <code>id</code> de la actividad, que va en la URL como variable de ruta: <code>/api/actividades/<strong>{id}</strong></code>. Es un <code>Long</code> positivo asignado por la base de datos al crear la actividad.</p>
+        <div id="mensaje-form" class="panel-mensaje" role="alert" aria-live="polite" hidden></div>
+        <form id="form-consultar" class="formulario" novalidate>
+            <div class="grid-campos">
+                <div class="campo col-completo">
+                    <label for="id">Id de la actividad <span class="obligatorio">*</span></label>
+                    <input type="number" id="id" name="id" required min="1" placeholder="Ej. 3">
+                    <span class="ayuda">Long · @PathVariable · va en la URL: /api/actividades/{id}</span>
+                </div>
+            </div>
+            <div class="acciones-formulario">
+                <button type="submit" class="btn btn-get">Consultar — GET</button>
+                <a href="listar.html" class="btn btn-secundario">Ver todas</a>
+            </div>
+        </form>
+    </section>
+
+    <!-- SECCIÓN SALIDA -->
+    <section class="seccion-endpoint" id="seccion-respuesta-consulta" aria-labelledby="lbl-salida-cons" hidden>
+        <div class="seccion-cabecera">
+            <span class="chip chip-200" id="chip-estado-consulta">200 OK</span>
+            <h2 id="lbl-salida-cons">Respuesta — Body: <code>ActividadResponse</code></h2>
+        </div>
+        <p class="seccion-desc">Si el id existe, el backend retorna el objeto completo con HTTP 200. Si no existe, retorna HTTP 404 con un <code>ErrorResponse</code> estructurado.</p>
+        <div class="tabla-respuesta-wrap">
+            <table class="tabla-respuesta">
+                <thead><tr><th>Campo</th><th>Tipo Java</th><th>Valor retornado</th></tr></thead>
+                <tbody id="cuerpo-respuesta-consulta">
+                    <tr><td colspan="3" class="celda-vacia">Esperando respuesta del backend...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+<footer class="pie-pagina"><div class="pie-interior"><span>© 2026 · Programación Avanzada · Universidad Distrital Francisco José de Caldas</span><span class="firma">Taller No 4 — Microservicios</span></div></footer>
+<script src="js/cliente-api.js"></script>
+</body>
+</html>

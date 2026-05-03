@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modificar actividad · Quehaceres del Hogar</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<a href="#contenido" class="skip-link">Saltar al contenido principal</a>
+<header class="cabecera">
+    <div class="cabecera-interior">
+        <a href="index.html" class="marca"><span class="logotipo">los <em>quehaceres</em></span><span class="subtitulo">Taller 4 · Prog. Avanzada</span></a>
+        <nav class="nav" aria-label="Navegación principal">
+            <a href="index.html">Inicio</a><a href="registrar.html">Registrar</a><a href="listar.html">Listar</a><a href="consultar.html">Consultar</a><a href="modificar.html" class="activo">Modificar</a><a href="borrar.html">Borrar</a>
+        </nav>
+    </div>
+</header>
+<main id="contenido">
+    <h1 class="titulo-pagina">Modificar una <em>actividad</em></h1>
+    <p class="subtitulo-pagina">Endpoint <code class="chip chip-put">PUT /api/actividades/{id}</code> — La entrada es el <code>id</code> en la URL más un <strong>ActividadDTO</strong> con todos los datos en el body. La tabla muestra el <strong>ActividadResponse</strong> modificado.</p>
+
+    <!-- SECCIÓN ENTRADA -->
+    <section class="seccion-endpoint" aria-labelledby="lbl-entrada-mod">
+        <div class="seccion-cabecera">
+            <span class="chip chip-put">PUT</span>
+            <h2 id="lbl-entrada-mod">Entrada — Path: <code>{id}</code> + Body: <code>ActividadDTO</code></h2>
+        </div>
+        <p class="seccion-desc">Paso 1: ingresa el id de la actividad para cargar sus datos actuales. Paso 2: edita los campos que necesites y guarda. El endpoint recibe el id por URL y el objeto completo como JSON.</p>
+        <div id="mensaje-form" class="panel-mensaje" role="alert" aria-live="polite" hidden></div>
+
+        <!-- Paso 1: buscar por id -->
+        <form id="form-buscar-modificar" class="formulario" novalidate style="margin-bottom:1.5rem;">
+            <div class="etiqueta-paso">Paso 1 — Parámetro de ruta <code>@PathVariable Long id</code></div>
+            <div class="grid-campos">
+                <div class="campo col-completo">
+                    <label for="id">Id de la actividad a modificar <span class="obligatorio">*</span></label>
+                    <input type="number" id="id" name="id" required min="1" placeholder="Ej. 3">
+                    <span class="ayuda">Long · va en la URL: PUT /api/actividades/{id}</span>
+                </div>
+            </div>
+            <div class="acciones-formulario">
+                <button type="submit" class="btn btn-get">Buscar actividad — GET</button>
+                <a href="listar.html" class="btn btn-secundario">Ver todas</a>
+            </div>
+        </form>
+
+        <!-- Paso 2: editar todos los campos -->
+        <form id="form-modificar" class="formulario" novalidate hidden>
+            <div class="etiqueta-paso">Paso 2 — Body del request: <code>ActividadDTO</code> (todos los campos)</div>
+            <input type="hidden" id="id_oculto" name="id_oculto">
+            <div class="grid-campos">
+                <div class="campo col-completo">
+                    <label for="m-titulo">Título <span class="obligatorio">*</span></label>
+                    <input type="text" id="m-titulo" name="titulo" required maxlength="120">
+                    <span class="ayuda">String · max 120 · @NotBlank @Size</span>
+                </div>
+                <div class="campo col-completo">
+                    <label for="m-descripcion">Descripción <span class="obligatorio">*</span></label>
+                    <textarea id="m-descripcion" name="descripcion" required maxlength="500"></textarea>
+                    <span class="ayuda">String · max 500 · @NotBlank @Size</span>
+                </div>
+                <div class="campo">
+                    <label for="m-fechaInicio">Fecha de inicio <span class="obligatorio">*</span></label>
+                    <input type="date" id="m-fechaInicio" name="fechaInicio" required>
+                    <span class="ayuda">LocalDate yyyy-MM-dd · @NotNull</span>
+                </div>
+                <div class="campo">
+                    <label for="m-fechaTerminacion">Fecha de terminación <span class="obligatorio">*</span></label>
+                    <input type="date" id="m-fechaTerminacion" name="fechaTerminacion" required>
+                    <span class="ayuda">LocalDate · no anterior al inicio · @NotNull</span>
+                </div>
+                <div class="campo col-completo">
+                    <label for="m-tipoActividad">Tipo de actividad <span class="obligatorio">*</span></label>
+                    <select id="m-tipoActividad" name="tipoActividad" required>
+                        <option value="FISICA">FISICA</option>
+                        <option value="ACOMPANAMIENTO">ACOMPANAMIENTO</option>
+                        <option value="SUPERVISION">SUPERVISION</option>
+                        <option value="CREATIVIDAD">CREATIVIDAD</option>
+                    </select>
+                    <span class="ayuda">TipoActividad (enum) · @NotNull</span>
+                </div>
+                <div class="campo">
+                    <label for="m-idQuehacer">Id del quehacer <span class="obligatorio">*</span></label>
+                    <input type="number" id="m-idQuehacer" name="idQuehacer" required min="1">
+                    <span class="ayuda">Long · @NotNull @Positive</span>
+                </div>
+                <div class="campo">
+                    <label for="m-idTutor">Id del tutor <span class="obligatorio">*</span></label>
+                    <input type="number" id="m-idTutor" name="idTutor" required min="1">
+                    <span class="ayuda">Long · @NotNull @Positive</span>
+                </div>
+                <div class="campo">
+                    <label for="m-idHijo">Id del hijo <span class="obligatorio">*</span></label>
+                    <input type="number" id="m-idHijo" name="idHijo" required min="1">
+                    <span class="ayuda">Long · @NotNull @Positive</span>
+                </div>
+            </div>
+            <div class="acciones-formulario">
+                <button type="submit" class="btn btn-put">Guardar cambios — PUT</button>
+                <a href="modificar.html" class="btn btn-secundario">Cancelar</a>
+            </div>
+        </form>
+    </section>
+
+    <!-- SECCIÓN SALIDA -->
+    <section class="seccion-endpoint" id="seccion-respuesta-modificar" aria-labelledby="lbl-salida-mod" hidden>
+        <div class="seccion-cabecera">
+            <span class="chip chip-200">200 OK</span>
+            <h2 id="lbl-salida-mod">Respuesta — Body: <code>ActividadResponse</code> modificado</h2>
+        </div>
+        <p class="seccion-desc">El backend actualiza la actividad y retorna el objeto completo ya con los datos nuevos. Si el id no existía, retorna HTTP 404 con <code>ErrorResponse</code>.</p>
+        <div class="tabla-respuesta-wrap">
+            <table class="tabla-respuesta">
+                <thead><tr><th>Campo</th><th>Tipo Java</th><th>Valor retornado</th></tr></thead>
+                <tbody id="cuerpo-respuesta-modificar">
+                    <tr><td colspan="3" class="celda-vacia">Esperando respuesta del backend...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+<footer class="pie-pagina"><div class="pie-interior"><span>© 2026 · Programación Avanzada · Universidad Distrital Francisco José de Caldas</span><span class="firma">Taller No 4 — Microservicios</span></div></footer>
+<script src="js/cliente-api.js"></script>
+</body>
+</html>

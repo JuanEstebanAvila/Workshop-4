@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listar actividades · Quehaceres del Hogar</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<a href="#contenido" class="skip-link">Saltar al contenido principal</a>
+<header class="cabecera">
+    <div class="cabecera-interior">
+        <a href="index.html" class="marca"><span class="logotipo">los <em>quehaceres</em></span><span class="subtitulo">Taller 4 · Prog. Avanzada</span></a>
+        <nav class="nav" aria-label="Navegación principal">
+            <a href="index.html">Inicio</a><a href="registrar.html">Registrar</a><a href="listar.html" class="activo">Listar</a><a href="consultar.html">Consultar</a><a href="modificar.html">Modificar</a><a href="borrar.html">Borrar</a>
+        </nav>
+    </div>
+</header>
+<main id="contenido">
+    <h1 class="titulo-pagina">Listar todas las <em>actividades</em></h1>
+    <p class="subtitulo-pagina">Endpoint <code class="chip chip-get">GET /api/actividades</code> — Sin parámetros de entrada. La tabla muestra el <strong>List&lt;ActividadResponse&gt;</strong> retornado por el backend.</p>
+
+    <!-- SECCIÓN ENTRADA -->
+    <section class="seccion-endpoint" aria-labelledby="lbl-entrada-list">
+        <div class="seccion-cabecera">
+            <span class="chip chip-get">GET</span>
+            <h2 id="lbl-entrada-list">Entrada — Sin parámetros</h2>
+        </div>
+        <p class="seccion-desc">Este endpoint no requiere ningún cuerpo ni parámetro. Solo se invoca la URL <code>GET /api/actividades</code> y el backend devuelve todas las actividades almacenadas en la base de datos H2.</p>
+        <div id="mensaje-form" class="panel-mensaje" role="alert" aria-live="polite" hidden></div>
+        <div class="formulario" style="padding:1.5rem 2rem;">
+            <p style="color:var(--tinta-suave);font-size:0.95rem;margin-bottom:1.2rem;">URL del endpoint:</p>
+            <div class="caja-url"><code>GET http://localhost:8080/api/actividades</code></div>
+            <div class="acciones-formulario">
+                <button id="btn-cargar-lista" class="btn btn-get">Consultar todas — GET</button>
+                <a href="registrar.html" class="btn btn-secundario">+ Nueva actividad</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECCIÓN SALIDA -->
+    <section class="seccion-endpoint" aria-labelledby="lbl-salida-list">
+        <div class="seccion-cabecera">
+            <span class="chip chip-200">200 OK</span>
+            <h2 id="lbl-salida-list">Respuesta — Body: <code>List&lt;ActividadResponse&gt;</code></h2>
+        </div>
+        <p class="seccion-desc">El backend retorna un arreglo JSON con todos los registros. Cada fila de la tabla corresponde a un objeto <code>ActividadResponse</code>.</p>
+        <div class="tabla-respuesta-wrap">
+            <table class="tabla-respuesta" id="tabla-listado">
+                <thead>
+                    <tr>
+                        <th>id</th><th>titulo</th><th>tipoActividad</th>
+                        <th>fechaInicio</th><th>fechaTerminacion</th>
+                        <th>idQuehacer</th><th>idTutor</th><th>idHijo</th>
+                    </tr>
+                </thead>
+                <tbody id="cuerpo-listado">
+                    <tr><td colspan="8" class="celda-vacia">Pulsa "Consultar todas" para cargar los datos del backend.</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+<footer class="pie-pagina"><div class="pie-interior"><span>© 2026 · Programación Avanzada · Universidad Distrital Francisco José de Caldas</span><span class="firma">Taller No 4 — Microservicios</span></div></footer>
+<script src="js/cliente-api.js"></script>
+</body>
+</html>

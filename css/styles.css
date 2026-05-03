@@ -1,0 +1,918 @@
+/* =========================================================================
+   ESTILOS GLOBALES · FRONTEND ACTIVIDADES DEL HOGAR
+   Taller No 4 - Programación Avanzada · Universidad Distrital
+   --------------------------------------------------------------------------
+   Estética: editorial cálida. Paleta crema/terracota/salvia/navy.
+   Tipografías: Fraunces (display, serif) + Manrope (texto).
+   ========================================================================= */
+
+/* -------------------------------------------------------------------------
+   1. RESET + VARIABLES
+   ------------------------------------------------------------------------- */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    /* Paleta */
+    --crema:        #FAF6F0;
+    --crema-2:      #F3ECE0;
+    --tinta:        #1F2937;
+    --tinta-suave:  #4B5563;
+    --gris-medio:   #9CA3AF;
+    --terracota:    #B8451F;
+    --terracota-2:  #92310C;
+    --salvia:       #6B8E5A;
+    --salvia-2:     #3F5C2D;
+    --navy:         #1E3A5F;
+    --navy-2:       #102341;
+    --ambar:        #B47B0F;
+    --borde:        #E7E2D9;
+    --borde-fuerte: #C9C0B0;
+    --error:        #B91C1C;
+    --error-bg:     #FEE2E2;
+    --exito:        #166534;
+    --exito-bg:     #DCFCE7;
+    --info-bg:      #DCE4F0;
+
+    /* Tipografía */
+    --serif: 'Fraunces', Georgia, serif;
+    --sans:  'Manrope', system-ui, sans-serif;
+
+    /* Espaciado y radios */
+    --r-sm: 6px;
+    --r-md: 10px;
+    --r-lg: 14px;
+    --r-xl: 22px;
+
+    /* Sombras */
+    --sombra-sm: 0 1px 2px rgba(31, 41, 55, 0.04);
+    --sombra-md: 0 4px 12px rgba(31, 41, 55, 0.06);
+    --sombra-lg: 0 16px 40px rgba(31, 41, 55, 0.10);
+}
+
+/* -------------------------------------------------------------------------
+   2. BASE
+   ------------------------------------------------------------------------- */
+html { scroll-behavior: smooth; }
+
+body {
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--tinta);
+    background: var(--crema);
+    /* Textura sutil de papel */
+    background-image:
+        radial-gradient(at 25% 12%, rgba(184, 69, 31, 0.04) 0, transparent 40%),
+        radial-gradient(at 80% 85%, rgba(107, 142, 90, 0.05) 0, transparent 40%);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+}
+
+main {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 5rem;
+}
+
+/* Foco visible para accesibilidad */
+:focus-visible {
+    outline: 3px solid var(--terracota);
+    outline-offset: 3px;
+    border-radius: var(--r-sm);
+}
+
+/* Selección de texto */
+::selection {
+    background: var(--terracota);
+    color: var(--crema);
+}
+
+/* -------------------------------------------------------------------------
+   3. ENLACE "SALTAR AL CONTENIDO" (accesibilidad)
+   ------------------------------------------------------------------------- */
+.skip-link {
+    position: absolute;
+    top: -100px;
+    left: 1rem;
+    background: var(--navy);
+    color: var(--crema);
+    padding: 0.6rem 1.2rem;
+    border-radius: var(--r-md);
+    z-index: 9999;
+    font-weight: 600;
+    transition: top 0.2s;
+}
+.skip-link:focus { top: 1rem; }
+
+/* -------------------------------------------------------------------------
+   4. ENCABEZADO Y NAVEGACIÓN
+   ------------------------------------------------------------------------- */
+.cabecera {
+    border-bottom: 1px solid var(--borde);
+    background: rgba(250, 246, 240, 0.85);
+    backdrop-filter: blur(8px);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.cabecera-interior {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 1.2rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    flex-wrap: wrap;
+}
+
+.marca {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    text-decoration: none;
+    color: var(--tinta);
+}
+
+.marca .logotipo {
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: 1.6rem;
+    letter-spacing: -0.02em;
+}
+
+.marca .logotipo em {
+    font-style: italic;
+    color: var(--terracota);
+    font-weight: 400;
+}
+
+.marca .subtitulo {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--gris-medio);
+    border-left: 1px solid var(--borde-fuerte);
+    padding-left: 0.7rem;
+}
+
+.nav {
+    display: flex;
+    gap: 0.3rem;
+    flex-wrap: wrap;
+}
+
+.nav a {
+    text-decoration: none;
+    color: var(--tinta-suave);
+    font-weight: 500;
+    font-size: 0.95rem;
+    padding: 0.5rem 0.9rem;
+    border-radius: var(--r-md);
+    transition: background 0.15s, color 0.15s;
+}
+
+.nav a:hover {
+    background: var(--crema-2);
+    color: var(--tinta);
+}
+
+.nav a.activo {
+    background: var(--tinta);
+    color: var(--crema);
+}
+
+/* -------------------------------------------------------------------------
+   5. HÉROE EDITORIAL (página inicio)
+   ------------------------------------------------------------------------- */
+.hero {
+    padding: 5rem 0 4rem;
+    border-bottom: 1px solid var(--borde);
+    margin-bottom: 4rem;
+    position: relative;
+}
+
+.hero .etiqueta {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--terracota);
+    border: 1px solid var(--terracota);
+    padding: 0.35rem 0.9rem;
+    border-radius: 99px;
+    margin-bottom: 1.8rem;
+}
+
+.hero h1 {
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: clamp(2.6rem, 7vw, 5.5rem);
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+    margin-bottom: 1.5rem;
+    max-width: 14ch;
+}
+
+.hero h1 em {
+    font-style: italic;
+    color: var(--terracota);
+    font-weight: 400;
+}
+
+.hero .descripcion {
+    font-size: 1.2rem;
+    color: var(--tinta-suave);
+    max-width: 55ch;
+    margin-bottom: 2.5rem;
+}
+
+.hero-acciones {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+/* -------------------------------------------------------------------------
+   6. TIPOGRAFÍA INTERNA
+   ------------------------------------------------------------------------- */
+.titulo-pagina {
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: clamp(2.2rem, 5vw, 3.4rem);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.5rem;
+}
+
+.titulo-pagina em {
+    font-style: italic;
+    color: var(--terracota);
+    font-weight: 400;
+}
+
+.subtitulo-pagina {
+    font-size: 1.1rem;
+    color: var(--tinta-suave);
+    max-width: 65ch;
+    margin-bottom: 3rem;
+}
+
+h2 {
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: 1.6rem;
+    color: var(--navy);
+    margin-bottom: 1rem;
+}
+
+h3 {
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: 1.25rem;
+    color: var(--navy);
+}
+
+/* -------------------------------------------------------------------------
+   7. BOTONES
+   ------------------------------------------------------------------------- */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-family: var(--sans);
+    font-weight: 600;
+    font-size: 0.95rem;
+    line-height: 1;
+    padding: 0.95rem 1.6rem;
+    border-radius: var(--r-md);
+    border: 1px solid transparent;
+    text-decoration: none;
+    cursor: pointer;
+    transition: transform 0.1s, background 0.15s, border-color 0.15s, color 0.15s;
+    white-space: nowrap;
+}
+
+.btn:active { transform: translateY(1px); }
+
+.btn-primario {
+    background: var(--tinta);
+    color: var(--crema);
+}
+.btn-primario:hover { background: var(--navy); }
+
+.btn-secundario {
+    background: transparent;
+    color: var(--tinta);
+    border-color: var(--borde-fuerte);
+}
+.btn-secundario:hover { background: white; border-color: var(--tinta); }
+
+.btn-terracota {
+    background: var(--terracota);
+    color: var(--crema);
+}
+.btn-terracota:hover { background: var(--terracota-2); }
+
+.btn-peligro {
+    background: var(--error);
+    color: white;
+}
+.btn-peligro:hover { background: #7F1D1D; }
+
+.btn-pequeno {
+    padding: 0.55rem 1rem;
+    font-size: 0.85rem;
+}
+
+/* -------------------------------------------------------------------------
+   8. TARJETAS DE OPCIÓN (página inicio)
+   ------------------------------------------------------------------------- */
+.opciones {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.tarjeta-opcion {
+    background: white;
+    border: 1px solid var(--borde);
+    border-radius: var(--r-lg);
+    padding: 2rem 1.8rem;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+    position: relative;
+    overflow: hidden;
+}
+
+.tarjeta-opcion::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 3px;
+    width: 0;
+    background: var(--terracota);
+    transition: width 0.3s ease;
+}
+
+.tarjeta-opcion:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--sombra-md);
+    border-color: var(--borde-fuerte);
+}
+
+.tarjeta-opcion:hover::before { width: 100%; }
+
+.tarjeta-opcion .numero {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 0.95rem;
+    color: var(--terracota);
+    letter-spacing: 0.05em;
+}
+
+.tarjeta-opcion h3 {
+    font-size: 1.4rem;
+    margin-bottom: 0.3rem;
+}
+
+.tarjeta-opcion p {
+    color: var(--tinta-suave);
+    font-size: 0.95rem;
+    flex-grow: 1;
+}
+
+.tarjeta-opcion .flecha {
+    align-self: flex-end;
+    font-family: var(--serif);
+    color: var(--terracota);
+    font-size: 1.5rem;
+    transition: transform 0.2s;
+}
+.tarjeta-opcion:hover .flecha { transform: translateX(6px); }
+
+/* -------------------------------------------------------------------------
+   9. FORMULARIOS
+   ------------------------------------------------------------------------- */
+.formulario {
+    background: white;
+    border: 1px solid var(--borde);
+    border-radius: var(--r-xl);
+    padding: 2.5rem;
+    max-width: 760px;
+    box-shadow: var(--sombra-sm);
+}
+
+.formulario .grid-campos {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.5rem 1.8rem;
+}
+
+.campo {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.campo.col-completo { grid-column: 1 / -1; }
+
+.campo label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--navy);
+}
+
+.campo .obligatorio {
+    color: var(--terracota);
+    font-weight: 700;
+    margin-left: 0.15rem;
+}
+
+.campo input,
+.campo select,
+.campo textarea {
+    font-family: var(--sans);
+    font-size: 1rem;
+    color: var(--tinta);
+    background: var(--crema);
+    border: 1.5px solid var(--borde-fuerte);
+    border-radius: var(--r-md);
+    padding: 0.85rem 1rem;
+    transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
+    width: 100%;
+}
+
+.campo input:hover,
+.campo select:hover,
+.campo textarea:hover {
+    border-color: var(--tinta-suave);
+}
+
+.campo input:focus,
+.campo select:focus,
+.campo textarea:focus {
+    border-color: var(--terracota);
+    background: white;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(184, 69, 31, 0.15);
+}
+
+.campo textarea {
+    min-height: 110px;
+    resize: vertical;
+    font-family: var(--sans);
+}
+
+.campo .ayuda {
+    font-size: 0.8rem;
+    color: var(--gris-medio);
+}
+
+.acciones-formulario {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--borde);
+    flex-wrap: wrap;
+}
+
+/* -------------------------------------------------------------------------
+   10. PANELES DE MENSAJE (sustituyen alerts y console)
+   ------------------------------------------------------------------------- */
+.panel-mensaje {
+    border-radius: var(--r-md);
+    padding: 1rem 1.3rem;
+    margin-bottom: 1.5rem;
+    border-left: 4px solid;
+    display: flex;
+    gap: 0.8rem;
+    align-items: flex-start;
+    font-size: 0.95rem;
+}
+
+.panel-mensaje[hidden] { display: none; }
+
+.panel-mensaje.exito {
+    background: var(--exito-bg);
+    border-color: var(--exito);
+    color: var(--exito);
+}
+
+.panel-mensaje.error {
+    background: var(--error-bg);
+    border-color: var(--error);
+    color: var(--error);
+}
+
+.panel-mensaje.info {
+    background: var(--info-bg);
+    border-color: var(--navy);
+    color: var(--navy);
+}
+
+.panel-mensaje .icono {
+    font-family: var(--serif);
+    font-style: italic;
+    font-weight: 700;
+    font-size: 1.2rem;
+    line-height: 1;
+}
+
+.panel-mensaje .texto strong { display: block; margin-bottom: 0.2rem; }
+
+/* -------------------------------------------------------------------------
+   11. AVISO DE MODO DEMO (al pie del formulario)
+   ------------------------------------------------------------------------- */
+.aviso-conexion {
+    background: var(--crema-2);
+    border: 1px dashed var(--borde-fuerte);
+    border-radius: var(--r-md);
+    padding: 0.8rem 1.1rem;
+    font-size: 0.85rem;
+    color: var(--tinta-suave);
+    margin-top: 1.5rem;
+}
+.aviso-conexion strong { color: var(--navy); }
+
+/* -------------------------------------------------------------------------
+   12. CUADRÍCULA DE TARJETAS (listado)
+   ------------------------------------------------------------------------- */
+.cuadricula-actividades {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+    gap: 1.5rem;
+}
+
+.tarjeta-actividad {
+    background: white;
+    border: 1px solid var(--borde);
+    border-radius: var(--r-lg);
+    padding: 1.6rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    transition: transform 0.2s, box-shadow 0.2s;
+    position: relative;
+}
+
+.tarjeta-actividad:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--sombra-md);
+}
+
+.tarjeta-actividad .id-actividad {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    font-family: var(--serif);
+    font-style: italic;
+    color: var(--gris-medio);
+    font-size: 0.95rem;
+}
+
+.tarjeta-actividad h3 {
+    font-size: 1.25rem;
+    color: var(--navy);
+    line-height: 1.25;
+}
+
+.tarjeta-actividad p {
+    color: var(--tinta-suave);
+    font-size: 0.92rem;
+    flex-grow: 1;
+}
+
+.tarjeta-actividad .pie {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid var(--borde);
+    padding-top: 0.8rem;
+    margin-top: 0.5rem;
+    font-size: 0.8rem;
+    color: var(--gris-medio);
+}
+
+.tarjeta-actividad .pie .fechas { font-family: monospace; }
+
+/* -------------------------------------------------------------------------
+   13. ETIQUETAS DE TIPO DE ACTIVIDAD
+   ------------------------------------------------------------------------- */
+.etiqueta-tipo {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    padding: 0.3rem 0.75rem;
+    border-radius: 99px;
+    align-self: flex-start;
+}
+
+.etiqueta-tipo.FISICA         { background: #FEE2D6; color: #92310C; }
+.etiqueta-tipo.ACOMPANAMIENTO { background: #DCEFD2; color: #3F5C2D; }
+.etiqueta-tipo.SUPERVISION    { background: #DCE4F0; color: #1E3A5F; }
+.etiqueta-tipo.CREATIVIDAD    { background: #F8E2D9; color: #92310C; }
+
+/* -------------------------------------------------------------------------
+   14. DETALLE DE ACTIVIDAD
+   ------------------------------------------------------------------------- */
+.detalle {
+    background: white;
+    border: 1px solid var(--borde);
+    border-radius: var(--r-xl);
+    padding: 2.5rem;
+    max-width: 760px;
+}
+
+.detalle h3.titulo-actividad {
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: 2rem;
+    line-height: 1.15;
+    margin: 0.7rem 0 1.5rem;
+    color: var(--tinta);
+}
+
+.detalle .descripcion-actividad {
+    font-size: 1.1rem;
+    color: var(--tinta-suave);
+    border-left: 4px solid var(--terracota);
+    padding: 0.3rem 0 0.3rem 1.2rem;
+    margin-bottom: 2rem;
+}
+
+.detalle dl {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: 0.8rem 2rem;
+    border-top: 1px solid var(--borde);
+    padding-top: 1.5rem;
+}
+
+.detalle dt {
+    font-family: var(--serif);
+    font-weight: 600;
+    color: var(--navy);
+    font-size: 0.95rem;
+}
+
+.detalle dd {
+    font-family: var(--sans);
+    font-size: 0.95rem;
+    color: var(--tinta);
+}
+
+/* -------------------------------------------------------------------------
+   15. ESTADO VACÍO
+   ------------------------------------------------------------------------- */
+.vacio {
+    text-align: center;
+    padding: 4rem 2rem;
+    border: 1px dashed var(--borde-fuerte);
+    border-radius: var(--r-lg);
+    color: var(--tinta-suave);
+}
+.vacio .icono {
+    font-family: var(--serif);
+    font-style: italic;
+    color: var(--terracota);
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    display: block;
+}
+.vacio h3 {
+    color: var(--tinta);
+    margin-bottom: 0.5rem;
+}
+
+/* -------------------------------------------------------------------------
+   16. PIE DE PÁGINA
+   ------------------------------------------------------------------------- */
+.pie-pagina {
+    border-top: 1px solid var(--borde);
+    margin-top: 5rem;
+    padding: 2.5rem 1.5rem;
+    background: var(--crema-2);
+}
+
+.pie-interior {
+    max-width: 1180px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    color: var(--tinta-suave);
+    font-size: 0.85rem;
+}
+
+.pie-interior .firma {
+    font-family: var(--serif);
+    font-style: italic;
+    color: var(--terracota);
+}
+
+/* -------------------------------------------------------------------------
+   17. AJUSTES RESPONSIVOS
+   ------------------------------------------------------------------------- */
+@media (max-width: 700px) {
+    .hero { padding: 3rem 0 2.5rem; }
+    .formulario { padding: 1.8rem 1.5rem; }
+    .detalle { padding: 1.8rem 1.5rem; }
+    .cabecera-interior { padding: 1rem; }
+    .marca .subtitulo { display: none; }
+    .acciones-formulario { flex-direction: column; }
+    .acciones-formulario .btn { width: 100%; }
+}
+
+/* -------------------------------------------------------------------------
+   18. UTILIDADES
+   ------------------------------------------------------------------------- */
+.flex-entre { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; }
+.mt-2 { margin-top: 2rem; }
+.solo-lectura-screen { position: absolute; left: -10000px; }
+
+/* =========================================================================
+   ESTILOS ADICIONALES — SECCIONES ENDPOINT + TABLAS DE RESPUESTA
+   ========================================================================= */
+
+/* Chips de método HTTP */
+.chip {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 0.3rem 0.8rem;
+    border-radius: 99px;
+    font-family: var(--sans);
+}
+.chip-post   { background: #DBEAFE; color: #1D4ED8; }
+.chip-get    { background: #DCFCE7; color: #166534; }
+.chip-put    { background: #FEF3C7; color: #92400E; }
+.chip-delete { background: #FEE2E2; color: #991B1B; }
+.chip-201    { background: #DBEAFE; color: #1D4ED8; }
+.chip-200    { background: #DCFCE7; color: #166534; }
+.chip-204    { background: #F3F4F6; color: #374151; }
+
+/* Botones con color de método */
+.btn-post   { background:#1D4ED8; color:white; }
+.btn-post:hover { background:#1E40AF; }
+.btn-get    { background:#166534; color:white; }
+.btn-get:hover { background:#14532D; }
+.btn-put    { background:#92400E; color:white; }
+.btn-put:hover { background:#78350F; }
+.btn-delete { background:#991B1B; color:white; }
+.btn-delete:hover { background:#7F1D1D; }
+
+/* Secciones endpoint */
+.seccion-endpoint {
+    margin-bottom: 2.5rem;
+    border: 1px solid var(--borde);
+    border-radius: var(--r-xl);
+    padding: 2rem;
+    background: white;
+    box-shadow: var(--sombra-sm);
+}
+
+.seccion-cabecera {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    margin-bottom: 0.6rem;
+}
+
+.seccion-cabecera h2 {
+    font-size: 1.25rem;
+    margin-bottom: 0;
+    color: var(--navy);
+}
+
+.seccion-desc {
+    color: var(--tinta-suave);
+    font-size: 0.95rem;
+    max-width: 70ch;
+    margin-bottom: 1.5rem;
+}
+
+/* Etiqueta de paso */
+.etiqueta-paso {
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--navy);
+    background: var(--crema-2);
+    border: 1px solid var(--borde);
+    border-radius: var(--r-md);
+    padding: 0.45rem 1rem;
+    margin-bottom: 1.2rem;
+    display: inline-block;
+}
+
+/* Caja URL */
+.caja-url {
+    background: var(--crema-2);
+    border: 1px solid var(--borde-fuerte);
+    border-radius: var(--r-md);
+    padding: 0.9rem 1.2rem;
+    font-size: 0.95rem;
+    color: var(--navy);
+    margin-bottom: 0.5rem;
+}
+
+/* Tabla de respuesta */
+.tabla-respuesta-wrap {
+    overflow-x: auto;
+    border-radius: var(--r-md);
+    border: 1px solid var(--borde);
+}
+
+.tabla-respuesta {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
+
+.tabla-respuesta thead tr {
+    background: var(--navy);
+    color: var(--crema);
+}
+
+.tabla-respuesta thead th {
+    padding: 0.75rem 1.1rem;
+    text-align: left;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.tabla-respuesta tbody tr {
+    border-bottom: 1px solid var(--borde);
+    transition: background 0.1s;
+}
+
+.tabla-respuesta tbody tr:last-child { border-bottom: none; }
+.tabla-respuesta tbody tr:hover { background: var(--crema); }
+
+.tabla-respuesta tbody td {
+    padding: 0.7rem 1.1rem;
+    color: var(--tinta);
+    vertical-align: middle;
+}
+
+.tabla-respuesta tbody td:first-child {
+    font-family: var(--serif);
+    font-weight: 600;
+    color: var(--navy);
+    white-space: nowrap;
+}
+
+.tabla-respuesta tbody td:nth-child(2) {
+    font-family: monospace;
+    font-size: 0.82rem;
+    color: var(--tinta-suave);
+    white-space: nowrap;
+}
+
+.tabla-respuesta tbody td:nth-child(3) {
+    font-family: monospace;
+    font-size: 0.88rem;
+    color: var(--tinta);
+    word-break: break-word;
+}
+
+.celda-vacia {
+    text-align: center;
+    color: var(--gris-medio);
+    font-style: italic;
+    padding: 2rem !important;
+}
+
+/* Fila de éxito en tabla */
+.fila-exito td { background: #F0FDF4; }
+.fila-exito td:first-child { color: var(--salvia-2); }
+
+/* Fila de error en tabla */
+.fila-error td { background: #FEF2F2; }

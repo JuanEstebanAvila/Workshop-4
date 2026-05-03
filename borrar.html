@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Borrar actividad · Quehaceres del Hogar</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<a href="#contenido" class="skip-link">Saltar al contenido principal</a>
+<header class="cabecera">
+    <div class="cabecera-interior">
+        <a href="index.html" class="marca"><span class="logotipo">los <em>quehaceres</em></span><span class="subtitulo">Taller 4 · Prog. Avanzada</span></a>
+        <nav class="nav" aria-label="Navegación principal">
+            <a href="index.html">Inicio</a><a href="registrar.html">Registrar</a><a href="listar.html">Listar</a><a href="consultar.html">Consultar</a><a href="modificar.html">Modificar</a><a href="borrar.html" class="activo">Borrar</a>
+        </nav>
+    </div>
+</header>
+<main id="contenido">
+    <h1 class="titulo-pagina">Borrar una <em>actividad</em></h1>
+    <p class="subtitulo-pagina">Endpoint <code class="chip chip-delete">DELETE /api/actividades/{id}</code> — La entrada es solo el <code>id</code> en la URL. La tabla muestra la confirmación de borrado retornada por el backend.</p>
+
+    <!-- SECCIÓN ENTRADA -->
+    <section class="seccion-endpoint" aria-labelledby="lbl-entrada-bor">
+        <div class="seccion-cabecera">
+            <span class="chip chip-delete">DELETE</span>
+            <h2 id="lbl-entrada-bor">Entrada — Path variable: <code>{id}</code></h2>
+        </div>
+        <p class="seccion-desc">El único parámetro es el <code>id</code> de la actividad en la URL. No tiene body. Primero se muestra la actividad encontrada para que puedas confirmar antes de eliminarla.</p>
+        <div id="mensaje-form" class="panel-mensaje" role="alert" aria-live="polite" hidden></div>
+
+        <form id="form-buscar-borrar" class="formulario" novalidate style="margin-bottom:1.5rem;">
+            <div class="etiqueta-paso">Parámetro de ruta <code>@PathVariable Long id</code></div>
+            <div class="grid-campos">
+                <div class="campo col-completo">
+                    <label for="id">Id de la actividad a borrar <span class="obligatorio">*</span></label>
+                    <input type="number" id="id" name="id" required min="1" placeholder="Ej. 3">
+                    <span class="ayuda">Long · va en la URL: DELETE /api/actividades/{id}</span>
+                </div>
+            </div>
+            <div class="acciones-formulario">
+                <button type="submit" class="btn btn-get">Buscar actividad — GET</button>
+                <a href="listar.html" class="btn btn-secundario">Ver todas</a>
+            </div>
+        </form>
+
+        <!-- Previsualización antes de confirmar -->
+        <section id="confirmacion-borrado" class="formulario" hidden aria-labelledby="titulo-confirmacion" style="border-color:var(--error);background:#FFF8F8;">
+            <div class="etiqueta-paso" style="color:var(--error);">Actividad encontrada — Confirma antes de borrar</div>
+            <div class="tabla-respuesta-wrap" style="margin-bottom:1.5rem;">
+                <table class="tabla-respuesta">
+                    <thead><tr><th>Campo</th><th>Tipo Java</th><th>Valor actual en BD</th></tr></thead>
+                    <tbody id="cuerpo-preview-borrar">
+                        <tr><td colspan="3" class="celda-vacia">—</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="acciones-formulario">
+                <button type="button" id="btn-confirmar-borrar" class="btn btn-delete">Confirmar borrado — DELETE</button>
+                <button type="button" id="btn-cancelar-borrar" class="btn btn-secundario">Cancelar</button>
+            </div>
+        </section>
+    </section>
+
+    <!-- SECCIÓN SALIDA -->
+    <section class="seccion-endpoint" id="seccion-respuesta-borrar" aria-labelledby="lbl-salida-bor" hidden>
+        <div class="seccion-cabecera">
+            <span class="chip chip-204" id="chip-estado-borrar">204 No Content</span>
+            <h2 id="lbl-salida-bor">Respuesta — <code>204 No Content</code></h2>
+        </div>
+        <p class="seccion-desc">El backend elimina el registro y retorna HTTP 204 sin cuerpo. Si el id no existía, retorna HTTP 404 con <code>ErrorResponse</code>.</p>
+        <div class="tabla-respuesta-wrap">
+            <table class="tabla-respuesta">
+                <thead><tr><th>Código HTTP</th><th>Body</th><th>Significado</th></tr></thead>
+                <tbody id="cuerpo-respuesta-borrar">
+                    <tr><td colspan="3" class="celda-vacia">Esperando respuesta del backend...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+<footer class="pie-pagina"><div class="pie-interior"><span>© 2026 · Programación Avanzada · Universidad Distrital Francisco José de Caldas</span><span class="firma">Taller No 4 — Microservicios</span></div></footer>
+<script src="js/cliente-api.js"></script>
+</body>
+</html>
