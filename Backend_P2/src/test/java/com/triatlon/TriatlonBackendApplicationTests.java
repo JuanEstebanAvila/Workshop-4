@@ -1,10 +1,10 @@
-package com.triatletamicroservicios.parcial2initializr;
+package com.triatlon;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class Parcial2initializrApplicationTests {
+class TriatlonBackendApplicationTests {
 
 	@Test
 	void contextLoads() {
